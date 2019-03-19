@@ -2,8 +2,6 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-image_lables = {}
-
 function request_prediction(){
   const Http = new XMLHttpRequest();
   const url='http://127.0.0.1:5000/classify';
@@ -13,16 +11,19 @@ function request_prediction(){
       if (this.readyState == 4 && this.status == 200) {
           obj = JSON.parse(Http.responseText);
           console.log(obj);
-
           clearUI()
-          document.getElementById('prediction').innerHTML = ""
+
           if(obj.hasOwnProperty('img_lables'))
           {
-            image_lables = obj.img_lables;
-          }else
-          {
-            image_lables = {};
+            displayBuffer(obj.img_lables);
           }
+          else
+          {
+            document.getElementById("buffer_div").innerHTML = "<br><p class=\"text-center\">All mic buffers are empty</p>"
+            //resetCounter()
+          }
+
+          
           for (mic in obj)
           {   
             if( mic != 'img_lables')
@@ -38,8 +39,11 @@ function request_prediction(){
                       maxValue = obj[mic][speaker];   
                   }
               }
-              document.getElementById('prediction').innerHTML += '<b>' + mic + '</b> ' + ' confidence:<br>';
+              document.getElementById('prediction').innerHTML += '<b>' + mic + '</b> ' + ' scores:<br>';
               document.getElementById(mic).textContent =(capitalizeFirstLetter(predicted_speaker));
+              add_speaker(mic,predicted_speaker)
+              displayBuffer()
+              
               for (speaker in obj[mic])
               {   
                   if (speaker === predicted_speaker) 
@@ -52,12 +56,11 @@ function request_prediction(){
                   }
               }
             }
-          }
-          displayBuffer() 
+          } 
       }
   }
 }
-var myVar = setInterval(request_prediction, 2000);
+var myVar = setInterval(request_prediction, 3000);
 
 function showClearSpec()
 {
@@ -71,9 +74,8 @@ function showOriginSpec()
   document.getElementById("destination_spectrogram").style.display="none";
 }
 
-function displayBuffer()
+function displayBuffer(image_lables)
 {
-  document.getElementById("buffer_div").innerHTML = ""
   for (mic in image_lables)
   {
     document.getElementById("buffer_div").innerHTML += '<a>&nbsp;&nbsp;<b>' + mic + '</b> buffer: </a>';
@@ -87,15 +89,67 @@ function displayBuffer()
       }
       document.getElementById("buffer_div").appendChild(img)
     }
-    document.getElementById("buffer_div").innerHTML += "<br>"
+    document.getElementById("buffer_div").innerHTML += find_most_likely_speakers(mic) + "<br>"
   }
 }
 
 function clearUI()
 {
-    for (i =0; i<4; i++)
+  document.getElementById('prediction').innerHTML = "";
+  document.getElementById("buffer_div").innerHTML = "";
+  for (i =0; i<4; i++)
+  {
+      mic_name = "mic_" + i;
+      document.getElementById(mic_name).textContent =(mic_name);
+  }
+}
+
+speaker_counter = {}
+function add_speaker(mic_ref,speaker_name)
+{
+  if (!speaker_counter.hasOwnProperty(mic_ref))
+  {
+    speaker_counter[mic_ref] = {}
+  }
+  if (!speaker_counter[mic_ref].hasOwnProperty(speaker_name))
+  {
+    speaker_counter[mic_ref][speaker_name] = 1
+  }
+  else
+  {
+    speaker_counter[mic_ref][speaker_name] +=1;
+  }
+}
+
+function resetCounter()
+{
+  speaker_counter = {}
+}
+
+function find_most_likely_speakers(mic_ref)
+{
+  most_likely_speaker = "";
+  max_count = 0;
+  total_count = 0;
+  for (speaker in speaker_counter[mic_ref])
+  {
+    if (speaker_counter[mic_ref][speaker] > max_count)
     {
-        mic_name = "mic_" + i
-        document.getElementById(mic_name).textContent =(mic_name);
+      max_count = speaker_counter[mic_ref][speaker];
+      most_likely_speaker = speaker;
     }
+    total_count += speaker_counter[mic_ref][speaker];
+  }
+  confidence = (max_count/total_count)*100
+  prediction_string = ""
+  start_prediction_delay = 4;
+  if (total_count > start_prediction_delay)
+  {
+    prediction_string = " <i> <b>" + capitalizeFirstLetter(most_likely_speaker) + "</b> (confidence: "+confidence.toFixed(1)+"%)</i>"
+  }
+  else
+  {
+    prediction_string = "<i> Calculating most likely speaker " + total_count + "/" + start_prediction_delay + " ...</i>"
+  }
+  return prediction_string;
 }
