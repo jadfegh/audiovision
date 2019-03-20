@@ -21,3 +21,10 @@ body {
       opacity:1;
   }
 }
+
+.spinEffect:not(:active) {
+  transform: rotate(360deg);
+ -webkit-transform: rotate(360deg);
+ -ms-transform: rotate(360deg);
+  transition: 0.75s;
+}

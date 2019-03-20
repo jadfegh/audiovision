@@ -20,7 +20,7 @@ function request_prediction(){
           else
           {
             document.getElementById("buffer_div").innerHTML = "<br><p class=\"text-center\">All mic buffers are empty</p>"
-            //resetCounter()
+            resetCounter()
           }
 
           
@@ -40,7 +40,7 @@ function request_prediction(){
                   }
               }
               document.getElementById('prediction').innerHTML += '<b>' + mic + '</b> ' + ' scores:<br>';
-              document.getElementById(mic).textContent =(capitalizeFirstLetter(predicted_speaker));
+              document.getElementById(mic).textContent = (capitalizeFirstLetter(predicted_speaker));
               add_speaker(mic,predicted_speaker)
               displayBuffer()
               
@@ -60,7 +60,7 @@ function request_prediction(){
       }
   }
 }
-var myVar = setInterval(request_prediction, 3000);
+var myVar = setInterval(request_prediction, 2000);
 
 function showClearSpec()
 {
@@ -105,7 +105,7 @@ function clearUI()
 }
 
 speaker_counter = {}
-function add_speaker(mic_ref,speaker_name)
+function add_speaker(mic_ref, speaker_name)
 {
   if (!speaker_counter.hasOwnProperty(mic_ref))
   {
@@ -149,7 +149,7 @@ function find_most_likely_speakers(mic_ref)
   }
   else
   {
-    prediction_string = "<i> Calculating most likely speaker " + total_count + "/" + start_prediction_delay + " ...</i>"
+    prediction_string = "<i> Computing most likely speaker " + total_count + "/" + start_prediction_delay + " ...</i>"
   }
   return prediction_string;
 }
