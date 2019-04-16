@@ -11,17 +11,6 @@ cd p3/audiovision
 IMAGE_SIZE=224
 
 ARCHITECTURE="mobilenet_0.50_${IMAGE_SIZE}"
-# AudioVision
-
-### Docker instruction for training
-
-docker run -it -p 0.0.0.0:6006:6006 --rm -v d:/:/p3 -w /. tensorflow/tensorflow:latest bash
-
-cd p3/audiovision
-
-IMAGE_SIZE=224
-
-ARCHITECTURE="mobilenet_0.50_${IMAGE_SIZE}"
 
 python -m scripts.retrain \
   --bottleneck_dir=tf_files/bottlenecks \
