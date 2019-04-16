@@ -1,6 +1,6 @@
 # AudioVision
 
-![Alt Text](audiovision.gif)
+[![Alt Text](audiovision.gif)](https://youtu.be/pLerOFTmngQ)
 
 ### Docker instruction for training
 
