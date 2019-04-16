@@ -131,3 +131,4 @@ export FLASK_APP=tensorflow_flask.py
 
 flask run --host=0.0.0.0
 ```
+  Flask will deliver all the UI files within the `static` folder and handle all the HTTP inference requests. The UI is done using [Bootstrap](https://getbootstrap.com/) + the great [RNNoise](https://people.xiph.org/~jm/demo/rnnoise/) noise suppression demo slightly modified for real-time playback.
